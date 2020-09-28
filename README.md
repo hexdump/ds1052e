@@ -3,30 +3,22 @@
 A programatic python interface for controlling and collecting data
 from the Rigol DS1052E oscilloscope.
 
-# Setup
+# Usage
 
-## macOS
-
-*(assuming `python` and `pip` are mapped to Python3 binaries)*
-
-First, install `libusb` via Homebrew:
+First, initialize a `DS1052E` object:
 
 ```
-$ brew install libusb
+from ds1052e import DS1052E
+
+scope = DS1052E()
 ```
 
-Then, install `pyusb` and `python-usbtmc` via `pip`:
+Then, to sample data from a channel (the default of `CHAN1`, or
+`CHAN2` or `MATH`), use `.sample()`:
 
 ```
-$ pip install pyusb python-usbtmc
+time, data = scope.sample()
 ```
-
-# Use
-
-Running `./scope.py` will display the current screen of the scope,
-presented as a labeled Matplotlib plot:
-
-![An example graph, showing a square wave with 50% duty cycle. The graph is labeled "Oscilloscope Channel 1", with a Y axis of "Voltage (V)" and X axis of "Time (mS)".](example.png)
 
 # Credits
 
