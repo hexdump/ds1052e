@@ -17,13 +17,17 @@ class DS1052E:
     def __init__(self):
         self.port = Instrument(6833, 1416)
 
-    def sample(self, channel="CHAN1"):
+    def stop(self):
+        self.port.write(":STOP")
+
+    def resume(self):
+        self.port.write(":RUN")
+        self.port.write(":KEY:FORCE")        
+        
+    def sample(self, channel="CHAN1", stop=True):
         if channel not in ["CHAN1", "CHAN2", "MATH"]:
             raise ValueError(".sample() channel must be one of: "
                              "\"CHAN1\", \"CHAN2\", \"MATH\"")
-
-        # freeze current observation, "stopping" new sampling
-        self.port.write(":STOP")
 
         # read parameters of observation
         timescale = float(self.port.ask(":TIM:SCAL?"))
@@ -34,11 +38,6 @@ class DS1052E:
         # load samples
         self.port.write(":WAV:POIN:MODE NOR")
         rawdata = self.port.ask_raw(b":WAV:DATA? " + channel.encode('utf-8'), 9000)
-
-        # resume sampling and disconnect from scope
-        self.port.write(":RUN")
-        self.port.write(":KEY:FORCE")
-        self.port.close()
 
         # convert data from raw bytes and add a time axis
         data = np.frombuffer(rawdata, "B")
